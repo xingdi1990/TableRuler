@@ -11,6 +11,8 @@ The AnomalyRuler pipeline consists of two main stages: induction and deduction. 
 ## Dependencies
 
 ```
+conda create --name tableruler python=3.10 -y
+conda activate tableruler
 pip install torch==2.1.0 torchvision==0.16.0 transformers==4.35.0 accelerate==0.24.1 sentencepiece==0.1.99 einops==0.7.0 xformers==0.0.22.post7 triton==2.1.0
 ```
 
@@ -19,17 +21,67 @@ pip install pandas pillow openai scikit-learn protobuf
 ```
 
 ## Dataset
-Download the datasets and put the {train} and {test} folder under the {dataset_name} folder, for example:
+
+### Command Line Download (Recommended)
+All datasets can be downloaded via command line. Create a datasets directory and run these commands:
+
+```bash
+# Setup environment and install dependencies
+conda activate tableruler
+pip install gdown
+
+# Create datasets directory
+mkdir -p datasets && cd datasets
+
+# Download all datasets (total ~28GB)
+gdown 1PO5BCMHUnmyb4NRSBFu28squcDv5VWTR -O ped2_dataset.zip
+gdown 1b1q0kuc88rD5qDf5FksMwcJ43js4opbe -O avenue_dataset.zip
+gdown 1KbfdyasribAMbbKoBU1iywAhtoAt9QI0 -O ubnormal_dataset.zip
+
+# SHTech (SharePoint download with browser user agent)
+wget --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36" \
+"https://livejohnshopkins-my.sharepoint.com/:u:/g/personal/yyang179_jh_edu/EZQzXSY1XfZNm7gEh1zFS7IB4RA484KQD-BGEb-H_kAtVA?e=49KJ9h&download=1" \
+-O shtech_dataset.zip
+
+# Extract all datasets
+unzip ped2_dataset.zip -d ped2/
+unzip avenue_dataset.zip -d avenue/
+unzip ubnormal_dataset.zip -d UBNormal/
+unzip shtech_dataset.zip -d SHTech/
+
+# Cleanup downloaded archives and Mac metadata
+rm *.zip
+rm -rf SHTech/__MACOSX
+```
+
+### Expected Directory Structure
+After download and extraction, your datasets directory should look like:
 
 ```
-+-- SHTech
-|   +-- train
-|   +-- test
-    |   +-- 01_0014
-        |   +-- 000.jpg
-        |   +-- ...
+datasets/
+├── ped2/ped2/               # 105MB - UCSD Ped2 dataset
+│   ├── training/
+│   └── testing/
+├── avenue/avenue/           # 2.2GB - CUHK Avenue dataset  
+│   ├── training/
+│   └── testing/
+├── UBNormal/               # 15GB - UBNormal dataset (29 scenes)
+│   ├── Scene1/
+│   ├── Scene2/
+│   └── ... (Scene29)
+└── SHTech/SHTech/          # 10.75GB - ShanghaiTech dataset
+    ├── train/
+    └── test/
+        ├── 01_0014/
+        │   ├── 000.jpg
+        │   ├── 001.jpg
+        │   └── ...
+        ├── 01_0015/
+        └── ... (94 test sequences)
 ```
-Download links: 
+
+### Manual Download Links (Alternative)
+If command line download fails, use these manual links:
 * [SHTech](https://livejohnshopkins-my.sharepoint.com/:u:/g/personal/yyang179_jh_edu/EZQzXSY1XfZNm7gEh1zFS7IB4RA484KQD-BGEb-H_kAtVA?e=49KJ9h)
 * [ped2 and avenue](https://github.com/feiyuhuahuo/Anomaly_Prediction?tab=readme-ov-file)
 * [UBNormal](https://github.com/lilygeorgescu/UBnormal)
